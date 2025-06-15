@@ -1,4 +1,4 @@
-##code for paper:Spiking ST-former:Enhancing Spatio-Temporal Modeling in Spiking Transformers via Integrated Self-Attention Mechanisms
+#code for paper:Spiking ST-former:Enhancing Spatio-Temporal Modeling in Spiking Transformers via Integrated Self-Attention Mechanisms
 
 ## Requirements
 timm==0.6.12; cupy==11.4.0; torch==1.12.1; spikingjelly==0.0.0.0.12; pyyaml; 
