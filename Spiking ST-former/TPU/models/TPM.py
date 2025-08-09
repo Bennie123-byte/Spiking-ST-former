@@ -8,8 +8,8 @@ from braincog.base.strategy.surrogate import *
 from models.utils.MyNode import *
 
 
-class TPU(BaseModule):
-    def __init__(self,dim=256,encode_type='direct',in_channels=16,TPU_belta=0.5):
+class TPM(BaseModule):
+    def __init__(self,dim=256,encode_type='direct',in_channels=16,TPM_belta=0.5):
         super().__init__(step=1,encode_type=encode_type)
         
 
@@ -19,7 +19,7 @@ class TPU(BaseModule):
         self.in_lif = MyNode(tau=2.0,v_threshold=0.3,layer_by_layer=False,step=1)  #spike-driven
         self.out_lif = MyNode(tau=2.0,v_threshold=0.5,layer_by_layer=False,step=1)   #spike-driven
 
-        self.TPU_belta = TPU_belta
+        self.TPM_belta = TPM_belta
 
     # input [T, B, H, N, C/H]
 
@@ -30,8 +30,8 @@ class TPU(BaseModule):
         T, B, H, N, CoH = x.shape
 
 
-        output = [] 
-        x_TPU = torch.empty_like(x[0]) #建立一个形状为[B, H, N, CoH]的未初始化的向量
+        ouTPMt = [] 
+        x_TPM = torch.empty_like(x[0]) #建立一个形状为[B, H, N, CoH]的未初始化的向量
 
 
 
@@ -40,36 +40,36 @@ class TPU(BaseModule):
         for i in range(T):
             #1st step
             if i == 0 :
-                x_TPU = x[i] #第0个时间步的向量直接赋值
-                output.append(x_TPU)
+                x_TPM = x[i] #第0个时间步的向量直接赋值
+                ouTPMt.append(x_TPM)
             
             #other steps
             else:
-                # print(x_TPU.flatten(0,1).shape)
-                # print(self.interactor(x_TPU.flatten(0,1)).shape)
-                x_TPU = self.interactor(x_TPU.flatten(0,1)).reshape(B,H,N,CoH).contiguous()#对T=i-1时刻的x_TPU进行卷积操作后形状回到原来的尺寸   /
-                x_TPU = self.in_lif(x_TPU) * self.TPU_belta + x[i] * (1-self.TPU_belta)#对T=i-时刻和T=i时刻的信息进行比例元素加操作。
-                x_TPU = self.out_lif(x_TPU)
-                print(x_TPU.shape)
+                # print(x_TPM.flatten(0,1).shape)
+                # print(self.interactor(x_TPM.flatten(0,1)).shape)
+                x_TPM = self.interactor(x_TPM.flatten(0,1)).reshape(B,H,N,CoH).contiguous()#对T=i-1时刻的x_TPM进行卷积操作后形状回到原来的尺寸   /
+                x_TPM = self.in_lif(x_TPM) * self.TPM_belta + x[i] * (1-self.TPM_belta)#对T=i-时刻和T=i时刻的信息进行比例元素加操作。
+                x_TPM = self.out_lif(x_TPM)
+                print(x_TPM.shape)
               
                 
-                output.append(x_TPU)
+                ouTPMt.append(x_TPM)
             
-        output = torch.stack(output) # T B H, N, C/H
-        print(output.shape)
+        ouTPMt = torch.stack(ouTPMt) # T B H, N, C/H
+        print(ouTPMt.shape)
 
-        return output # T B H, N, C/H
+        return ouTPMt # T B H, N, C/H
 
 dim = 256
 encode_type = 'direct'
 in_channels = 16
-TPU_belta = 0.5
-TPU_module = TPU(dim=dim, encode_type=encode_type, in_channels=in_channels, TPU_belta=TPU_belta)
+TPM_belta = 0.5
+TPM_module = TPM(dim=dim, encode_type=encode_type, in_channels=in_channels, TPM_belta=TPM_belta)
 
 # 创建一个符合输入要求的张量 x
 # 假设 T=3, B=2, H=4, N=5, CoH=dim/4=64
 T, B, H, N, CoH = 3, 2, 4, 16, 64
 x = torch.randn(T, B, H, N, CoH)
 
-# 调用 forward 方法并打印 x_TPU
-output = TPU_module(x)
+# 调用 forward 方法并打印 x_TPM
+ouTPMt = TPM_module(x)
