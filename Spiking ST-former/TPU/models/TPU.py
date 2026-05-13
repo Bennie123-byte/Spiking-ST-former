@@ -31,7 +31,7 @@ class TPU(BaseModule):
 
 
         output = [] 
-        x_TPU = torch.empty_like(x[0]) #建立一个形状为[B, H, N, CoH]的未初始化的向量
+        x_TPU = torch.empty_like(x[0]) 
 
 
 
@@ -47,8 +47,8 @@ class TPU(BaseModule):
             else:
                 # print(x_TPU.flatten(0,1).shape)
                 # print(self.interactor(x_TPU.flatten(0,1)).shape)
-                x_TPU = self.interactor(x_TPU.flatten(0,1)).reshape(B,H,N,CoH).contiguous()#对T=i-1时刻的x_TPU进行卷积操作后形状回到原来的尺寸   /
-                x_TPU = self.in_lif(x_TPU) * self.TPU_belta + x[i] * (1-self.TPU_belta)#对T=i-时刻和T=i时刻的信息进行比例元素加操作。
+                x_TPU = self.interactor(x_TPU.flatten(0,1)).reshape(B,H,N,CoH).contiguous()
+                x_TPU = self.in_lif(x_TPU) * self.TPU_belta + x[i] * (1-self.TPU_belta)
                 x_TPU = self.out_lif(x_TPU)
                 print(x_TPU.shape)
               
